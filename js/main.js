@@ -65,6 +65,7 @@ class MusicPlayer {
         this.isPlaying = false;
 
         this.tempo = 120; // Default BPM
+        this.autoScrollDuringPlayback = false; // Default to no auto-scroll
         
 
         
@@ -90,29 +91,158 @@ class MusicPlayer {
         
         // Default example patterns
         this.defaultBeatPattern = `[
-  {"beat": "kick", "dur": 1, "vol": [1]},
-  {"beat": "hihat", "dur": 0.5, "vol": [0.5]},
-  {"beat": "snare", "dur": 0.5, "vol": [0.8]},
-  {"beats": [
-    {"beat": "kick", "dur": 1, "vol": [1]},
-    {"beat": "hihat", "dur": 0.5, "vol": [0.5]}
-  ]},
-  {"beat": "clap", "dur": 0.5, "vol": [0.7]}
+    {"beat": "rest", "dur": 5},
+    {"beats": [
+        {"beat": "snare", "dur": 1},
+        {"beat": "clap", "dur": 1}
+    ]},
+    {"beats": [
+        {"beat": "kick", "dur": 2},
+        {"beat": "hihat", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 4}
+    ]},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2},
+    {"beats": [
+        {"beat": "kick", "dur": 4},
+        {"beat": "snare", "dur": 4},
+        {"beat": "clap", "dur": 2}
+    ]},
+    {"beat": "hihat", "dur": 2}
 ]`;
 
         this.defaultMelodyPattern = `[
-  {"note": "C4", "dur": 1, "vol": [0.8], "instrument": "piano"},
-  {"note": "E4", "dur": 1, "vol": [0.7], "instrument": "acousticGuitar"},
-  {"note": "G4", "dur": 1, "vol": [0.6], "instrument": "strings"},
-  {"notes": [
-    {"note": "C4", "dur": 2, "vol": [0.7], "instrument": "piano"},
-    {"note": "E4", "dur": 2, "vol": [0.7], "instrument": "piano"},
-    {"note": "G4", "dur": 2, "vol": [0.7], "instrument": "piano"}
-   ]}
+    {"note": "F#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "F#5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "F#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "F#5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "F#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "F#5", "dur": 0.5, "instrument": "electricGuitar"},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"note": "E3", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "F#5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "A5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E2", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "E3", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "G#5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E2", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"notes": [
+        {"note": "B5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "F#5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "A5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "G#5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "E3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"note": "E3", "dur": 1, "instrument": "electricGuitar"},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "G#5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "E3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "E2", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "B5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "E5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "G#5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "E3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "D2", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "A5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "F#5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "D5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "A5", "dur": 1, "instrument": "electricGuitar"},
+        {"note": "D3", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"notes": [
+        {"note": "A5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "F#5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "D5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "A5", "dur": 2, "instrument": "electricGuitar"},
+        {"note": "D2", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "D3", "dur": 1, "instrument": "electricGuitar"},
+    {"notes": [
+        {"note": "A5", "dur": 4, "instrument": "electricGuitar"},
+        {"note": "F#5", "dur": 4, "instrument": "electricGuitar"},
+        {"note": "D5", "dur": 4, "instrument": "electricGuitar"},
+        {"note": "A5", "dur": 4, "instrument": "electricGuitar"},
+        {"note": "D2", "dur": 1, "instrument": "electricGuitar"}
+    ]},
+    {"note": "D3", "dur": 1, "instrument": "electricGuitar"},
+    {"note": "D2", "dur": 1, "instrument": "electricGuitar"},
+    {"note": "D3", "dur": 1, "instrument": "electricGuitar"}
 ]`;
-        
 
-        
         this.init();
     }
     
@@ -258,12 +388,38 @@ class MusicPlayer {
     }
     
     validatePatternAndShowHints(pattern, type) {
-        if (!pattern || !Array.isArray(pattern)) return null;
+        if (!pattern) return null;
+        
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        let bpm = null;
+        
+        if (Array.isArray(pattern)) {
+            patternItems = pattern;
+        } else if (typeof pattern === 'object' && pattern.pattern && Array.isArray(pattern.pattern)) {
+            patternItems = pattern.pattern;
+            bpm = pattern.bpm;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.beats)) {
+            patternItems = pattern.beats;
+            bpm = pattern.bpm;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.notes)) {
+            patternItems = pattern.notes;
+            bpm = pattern.bpm;
+        } else {
+            return null;
+        }
         
         const hints = [];
         const issues = [];
         
-        pattern.forEach((item, index) => {
+        // Validate BPM if present
+        if (bpm !== null && bpm !== undefined) {
+            if (typeof bpm !== 'number' || bpm <= 0 || bpm > 300) {
+                issues.push(`Invalid BPM: ${bpm}. Must be a number between 1 and 300`);
+            }
+        }
+        
+        patternItems.forEach((item, index) => {
             const itemHints = this.validatePatternItem(item, type);
             if (itemHints.hints.length > 0) {
                 hints.push(...itemHints.hints.map(h => `Item ${index + 1}: ${h}`));
@@ -274,7 +430,7 @@ class MusicPlayer {
         });
         
         // Check for overall pattern issues
-        if (pattern.length === 0) {
+        if (patternItems.length === 0) {
             hints.push(`${type} pattern is empty - add at least one item`);
         }
         
@@ -489,8 +645,20 @@ class MusicPlayer {
     }
     
     startPlayback(beatPattern, melodyPattern) {
-        const tempo = this.tempo; // Use current tempo setting
-        const beatDuration = 60 / tempo; // Duration of one beat in seconds
+        // Extract BPM settings from patterns or use defaults
+        let beatBpm = this.tempo;
+        let melodyBpm = this.tempo;
+        
+        if (beatPattern && beatPattern.bpm) {
+            beatBpm = beatPattern.bpm;
+        }
+        if (melodyPattern && melodyPattern.bpm) {
+            melodyBpm = melodyPattern.bpm;
+        }
+        
+        // Calculate durations for each pattern
+        const beatDuration = 60 / beatBpm;
+        const melodyDuration = 60 / melodyBpm;
         
         // Calculate total duration based on what's being played
         let totalDuration = 0;
@@ -499,7 +667,7 @@ class MusicPlayer {
             totalDuration = Math.max(totalDuration, beatTotalDuration);
         }
         if (melodyPattern) {
-            const melodyTotalDuration = this.calculatePatternDuration(melodyPattern) * beatDuration;
+            const melodyTotalDuration = this.calculatePatternDuration(melodyPattern) * melodyDuration;
             totalDuration = Math.max(totalDuration, melodyTotalDuration);
         }
 
@@ -513,13 +681,11 @@ class MusicPlayer {
             (!this.trackState.beat.soloed || this.trackState.melody.soloed);
         
         if (shouldPlayBeat) {
-            const bpm = 60000 / (beatDuration * 1000);
-            this.playBeatPattern(beatPattern, bpm);
+            this.playBeatPattern(beatPattern, beatBpm);
         }
         
         if (shouldPlayMelody) {
-            const bpm = 60000 / (beatDuration * 1000);
-            this.playMelodyPattern(melodyPattern, bpm);
+            this.playMelodyPattern(melodyPattern, melodyBpm);
         }
         
         // Schedule stop
@@ -531,17 +697,31 @@ class MusicPlayer {
     }
     
     calculatePatternDuration(pattern) {
-        return pattern.reduce((total, item) => total + (item.dur || 1), 0);
+        // Filter out BPM setting if present at top level
+        const patternItems = Array.isArray(pattern) ? pattern : [];
+        return patternItems.reduce((total, item) => total + (item.dur || 1), 0);
     }
     
     playBeatPattern(beatPattern = [], bpm = 300) {
         if (!this.audioEngine.isInitialized) this.audioEngine.init();
 
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        if (Array.isArray(beatPattern)) {
+            patternItems = beatPattern;
+        } else if (typeof beatPattern === 'object' && beatPattern.pattern && Array.isArray(beatPattern.pattern)) {
+            patternItems = beatPattern.pattern;
+            bpm = beatPattern.bpm || bpm;
+        } else if (typeof beatPattern === 'object' && Array.isArray(beatPattern.beats)) {
+            patternItems = beatPattern.beats;
+            bpm = beatPattern.bpm || bpm;
+        }
+
         const beatMs = 60000 / bpm;
         const beatSec = beatMs / 1000;
         let startTime = this.audioEngine.audioContext.currentTime;
 
-        beatPattern.forEach(step => {
+        patternItems.forEach(step => {
             let stepBeats;
 
             if (typeof step.dur === "number" && isFinite(step.dur)) {
@@ -606,12 +786,24 @@ class MusicPlayer {
     playMelodyPattern(melody = [], bpm = 300, onFinished) {
         if (!this.audioEngine.isInitialized) this.audioEngine.init();
 
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        if (Array.isArray(melody)) {
+            patternItems = melody;
+        } else if (typeof melody === 'object' && melody.pattern && Array.isArray(melody.pattern)) {
+            patternItems = melody.pattern;
+            bpm = melody.bpm || bpm;
+        } else if (typeof melody === 'object' && Array.isArray(melody.notes)) {
+            patternItems = melody.notes;
+            bpm = melody.bpm || bpm;
+        }
+
         const beatMs = 60000 / bpm;
         const beatSec = beatMs / 1000;
         let startTime = this.audioEngine.audioContext.currentTime;
         let totalDuration = 0;
 
-        melody.forEach(step => {
+        patternItems.forEach(step => {
             // determine step length by shortest note
             let stepBeats;
             if (typeof step.dur === "number" && isFinite(step.dur)) {
@@ -1701,9 +1893,7 @@ class MusicPlayer {
         
         this.updateStatus(`Switched to ${editor.toUpperCase()} editor`);
     }
-    
 
-    
     // MIDI Methods
     handleMidiUpload(event) {
         const file = event.target.files[0];
@@ -1782,49 +1972,6 @@ class MusicPlayer {
         }
     }
     
-    // Grid Editor Methods (Not implemented - would require HTML grid elements)
-    /*
-    syncJsonToGrid() {
-        // Grid editing not implemented - would need beat-grid and melody-grid elements in HTML
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    syncGridToJson() {
-        // Grid editing not implemented - would need beat-grid and melody-grid elements in HTML
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    renderGrid(type) {
-        // Grid editing not implemented - would need beat-grid and melody-grid elements in HTML
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    toggleChordExpansion(type, index) {
-        // Grid editing not implemented
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    removeChordItem(type, chordIndex, itemIndex) {
-        // Grid editing not implemented
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    addChordItem(type, index) {
-        // Grid editing not implemented
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    updateGridData(type, input) {
-        // Grid editing not implemented
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    
-    removeGridRow(type, index) {
-        // Grid editing not implemented
-        this.updateStatus('Grid editor not implemented', 'error');
-    }
-    */
-    
     // Playback Visualization
     startPlaybackVisualization() {
         this.clearPlaybackVisualization();
@@ -1854,22 +2001,34 @@ class MusicPlayer {
             return;
         }
         
-        if (!Array.isArray(data)) {
-            console.error(`${type} pattern is not an array:`, data);
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        let tempo = this.tempo; // default tempo
+        
+        if (Array.isArray(data)) {
+            patternItems = data;
+        } else if (typeof data === 'object' && data.pattern && Array.isArray(data.pattern)) {
+            patternItems = data.pattern;
+            tempo = data.bpm || this.tempo;
+        } else if (typeof data === 'object' && Array.isArray(data.beats)) {
+            patternItems = data.beats;
+            tempo = data.bpm || this.tempo;
+        } else {
+            console.error(`${type} pattern is not in a valid format:`, data);
             return;
         }
-        const tempo = this.tempo;
+        
         const beatDuration = 60 / tempo;
         
         // Clear existing visualization
         viz.innerHTML = '';
         
         // Calculate total duration for positioning
-        const totalDuration = data.reduce((total, item) => total + ((item && typeof item.dur === 'number') ? item.dur : 1), 0);
+        const totalDuration = patternItems.reduce((total, item) => total + ((item && typeof item.dur === 'number') ? item.dur : 1), 0);
         
         let currentTime = 0;
         
-        data.forEach((item, index) => {
+        patternItems.forEach((item, index) => {
             if (!item || typeof item !== 'object') {
                 console.warn(`Invalid ${type} pattern item at index ${index}:`, item);
                 return;
@@ -1895,12 +2054,14 @@ class MusicPlayer {
             
             viz.appendChild(vizItem);
 
-            // Schedule highlighting with simple scroll
+            // Schedule highlighting with optional scrolling
             const highlightTimer = setTimeout(() => {
                 vizItem.classList.add('active');
 
-                // Simple scroll to active item
-                this.scrollToActiveItem(viz, vizItem);
+                // Only scroll if user has enabled auto-scroll
+                if (this.autoScrollDuringPlayback) {
+                    this.scrollToActiveItem(viz, vizItem);
+                }
                 
                 setTimeout(() => {
                     vizItem.classList.remove('active');
@@ -1914,61 +2075,42 @@ class MusicPlayer {
         });
         
         console.log(`Visualization for ${type}:`, {
-            totalItems: data.length,
+            totalItems: patternItems.length,
             totalDuration: totalDuration,
-            items: data.map((item, i) => ({
+            tempo: tempo,
+            items: patternItems.map((item, i) => ({
                 index: i,
                 label: type === 'beat' ? item.beat : item.note,
                 duration: item.dur || 1,
-                startTime: data.slice(0, i).reduce((sum, prev) => sum + (prev.dur || 1), 0) * beatDuration
+                startTime: patternItems.slice(0, i).reduce((sum, prev) => sum + (prev.dur || 1), 0) * beatDuration
             }))
         });
     }
     
     scrollToActiveItem(viz, activeItem) {
-        // Simple, reliable scroll to active item using scrollIntoView
+        // Disable automatic scrolling to prevent focus jumping
+        // Only scroll if user has manually scrolled away and item is completely invisible
         try {
-            // Use scrollIntoView with options for smooth horizontal scrolling
-            activeItem.scrollIntoView({
-                behavior: 'smooth',
-                inline: 'center',
-                block: 'nearest'
-            });
-        } catch (error) {
-            // Fallback to manual scroll calculation
-            try {
-                const vizRect = viz.getBoundingClientRect();
-                const itemRect = activeItem.getBoundingClientRect();
-                
-                // Calculate if item is outside visible area
-                const itemLeft = itemRect.left - vizRect.left;
-                const itemRight = itemRect.right - vizRect.left;
-                const vizWidth = vizRect.width;
-                
-                // Scroll if item is not fully visible
-                if (itemLeft < 0 || itemRight > vizWidth) {
-                    // Calculate target scroll position to center item
-                    const itemCenter = itemLeft + (itemRect.width / 2);
-                    const targetScrollLeft = viz.scrollLeft + itemCenter - (vizWidth / 2);
-                    
-                    // Apply scroll with bounds checking
-                    const maxScrollLeft = viz.scrollWidth - viz.clientWidth;
-                    const finalScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScrollLeft));
-                    
-                    viz.scrollLeft = finalScrollLeft;
-                    
-                    console.log('Scrolled to active item using fallback method:', {
-                        itemLeft,
-                        itemRight,
-                        vizWidth,
-                        targetScrollLeft,
-                        finalScrollLeft,
-                        maxScrollLeft
-                    });
-                }
-            } catch (fallbackError) {
-                console.error('Error in fallback scroll method:', fallbackError);
+            const vizRect = viz.getBoundingClientRect();
+            const itemRect = activeItem.getBoundingClientRect();
+            
+            // Calculate if item is completely outside visible area (no padding)
+            const itemLeft = itemRect.left - vizRect.left;
+            const itemRight = itemRect.right - vizRect.left;
+            const vizWidth = vizRect.width;
+            
+            // Only scroll if item is completely invisible (very restrictive)
+            if (itemLeft > vizWidth || itemRight < 0) {
+                console.log('Item completely invisible, scrolling to show it');
+                // Use scrollIntoView with options for smooth horizontal scrolling
+                activeItem.scrollIntoView({
+                    behavior: 'smooth',
+                    inline: 'center',
+                    block: 'nearest'
+                });
             }
+        } catch (error) {
+            console.error('Error in scroll check:', error);
         }
     }
     

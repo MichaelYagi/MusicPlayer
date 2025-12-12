@@ -351,10 +351,35 @@ class StorageModule {
     
     // Pattern validation
     validatePattern(pattern, type) {
-        if (!Array.isArray(pattern)) return false;
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        let bpm = null;
+        
+        if (Array.isArray(pattern)) {
+            patternItems = pattern;
+        } else if (typeof pattern === 'object' && pattern.pattern && Array.isArray(pattern.pattern)) {
+            patternItems = pattern.pattern;
+            bpm = pattern.bpm;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.beats)) {
+            patternItems = pattern.beats;
+            bpm = pattern.bpm;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.notes)) {
+            patternItems = pattern.notes;
+            bpm = pattern.bpm;
+        } else {
+            return false;
+        }
+        
+        // Validate BPM if present
+        if (bpm !== null && bpm !== undefined) {
+            if (typeof bpm !== 'number' || bpm <= 0 || bpm > 300) {
+                console.error('Invalid BPM:', bpm);
+                return false;
+            }
+        }
         
         if (type === 'beat') {
-            return pattern.every((item, index) => {
+            return patternItems.every((item, index) => {
                 console.log(`Validating beat item ${index}:`, item);
                 
                 const isObject = typeof item === 'object';
@@ -389,6 +414,56 @@ class StorageModule {
                     hasVol,
                     beatType: typeof item.beat,
                     beatsType: typeof item.beats,
+                    durType: typeof item.dur,
+                    volType: typeof item.vol,
+                    isChord: !!item.notes,
+                    isRest: item.note === 'rest'
+                });
+
+                const isValid = isObject && hasBeatOrBeats && hasDur && hasVol;
+                
+                if (!isValid) {
+                    console.log(`Melody validation FAILED at index ${index}:`, item);
+                } else {
+                    console.log(`Melody validation PASSED at index ${index}`);
+                }
+                return isValid;
+            });
+        } else if (type === 'melody') {
+            return patternItems.every((item, index) => {
+                console.log(`Validating melody item ${index}:`, item);
+                
+                const isObject = typeof item === 'object';
+                const hasNoteOrNotes = typeof item.note === 'string' || Array.isArray(item.notes) || typeof item.freq === 'number';
+                const hasDur = typeof (item.dur || 1) === 'number';
+                
+                // For chord items, vol is optional (uses individual note volumes)
+                // For single items, vol is optional (defaults to 1.0)
+                let hasVol = true;
+                if (item.notes) {
+                    // Chord item - check if inner notes have vol
+                    const hasAnyVol = item.notes.some(note => 
+                        note.hasOwnProperty('vol') && (typeof note.vol === 'number' || Array.isArray(note.vol))
+                    );
+                    hasVol = hasAnyVol || item.notes.every(note => 
+                        !note.hasOwnProperty('vol') || (typeof note.vol === 'number' || Array.isArray(note.vol))
+                    );
+                } else if (item.note === 'rest') {
+                    // Rest items don't need volume
+                    hasVol = true;
+                } else {
+                    // Single item - vol is optional, but if present must be valid
+                    hasVol = !item.hasOwnProperty('vol') || 
+                             (typeof item.vol === 'number' || Array.isArray(item.vol));
+                }
+                
+                console.log(`Melody item ${index} validation checks:`, {
+                    isObject,
+                    hasNoteOrNotes,
+                    hasDur,
+                    hasVol,
+                    noteType: typeof item.note,
+                    notesType: typeof item.notes,
                     durType: typeof item.dur,
                     volType: typeof item.vol,
                     isChord: !!item.notes,
