@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Music Player Tests</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .test-summary {
+            background: #f0f0f0;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .pass {
+            color: green;
+            font-weight: bold;
+        }
+        .fail {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="mocha"></div>
+    <div id="test-summary" class="test-summary"></div>
+    
+    <!-- Load Mocha -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/10.2.0/mocha.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.3.7/chai.min.js"></script>
+    
+    <!-- Load application modules -->
+    <script src="js/storage.js"></script>
+    <script src="js/audio-engine.js"></script>
+    <script src="js/midi-parser.js"></script>
+    <script src="js/main.js"></script>
+    
+    <!-- Load tests -->
+    <script>
+        // Set up Mocha
+        mocha.setup('bdd');
+        const expect = chai.expect;
+        
+        // Storage Tests
+        describe('Storage Module', () => {
+            let storage;
+            
+            beforeEach(() => {
+                localStorage.clear();
+                storage = new StorageModule();
+            });
+            
+            it('should validate beat patterns with duration 0', () => {
+                const pattern = [
+                    {"beat": "kick", "dur": 1},
+                    {"beat": "rest", "dur": 0},
+                    {"beat": "snare", "dur": 1}
+                ];
+                
+                const isValid = storage.validatePattern(pattern, 'beat');
+                expect(isValid).to.be.true;
+            });
+            
+            it('should validate melody patterns with duration 0', () => {
+                const pattern = [
+                    {"note": "C4", "dur": 1},
+                    {"note": "rest", "dur": 0},
+                    {"note": "E4", "dur": 1}
+                ];
+                
+                const isValid = storage.validatePattern(pattern, 'melody');
+                expect(isValid).to.be.true;
+            });
+            
+            it('should save and retrieve patterns', () => {
+                const pattern = [{"beat": "kick", "dur": 1}];
+                const saved = storage.savePattern('beat', 'test', pattern);
+                expect(saved).to.be.true;
+                
+                const patterns = storage.getPatterns('beat');
+                expect(patterns).to.have.length(1);
+                expect(patterns[0].name).to.equal('test');
+            });
+        });
+        
+        // Music Player Tests
+        describe('Music Player', () => {
+            let player;
+            
+            beforeEach(() => {
+                document.body.innerHTML = `
+                    <div id="beat-input"></div>
+                    <div id="melody-input"></div>
+                    <div id="beat-viz"></div>
+                    <div id="melody-viz"></div>
+                `;
+                player = new MusicPlayer();
+            });
+            
+            it('should calculate duration ignoring duration 0 items', () => {
+                const pattern = [
+                    {"beat": "kick", "dur": 1},
+                    {"beat": "snare", "dur": 0},  // Should be ignored
+                    {"beat": "hihat", "dur": 0.5}
+                ];
+                
+                const duration = player.calculatePatternDuration(pattern, 'beat');
+                expect(duration).to.equal(1.5); // 1 + 0.5
+            });
+            
+            it('should ignore duration 0 items in visualization', () => {
+                const pattern = [
+                    {"beat": "kick", "dur": 1},
+                    {"beat": "snare", "dur": 0},  // Should be ignored
+                    {"beat": "hihat", "dur": 0.5}
+                ];
+                
+                player.beatInput.value = JSON.stringify(pattern);
+                player.visualizePattern('beat');
+                
+                const vizItems = player.beatViz.querySelectorAll('.viz-item');
+                expect(vizItems).to.have.length(2); // kick, hihat
+            });
+            
+            it('should convert notes to frequencies', () => {
+                expect(player.noteToFrequency('A4')).to.equal(440);
+                expect(player.noteToFrequency('C4')).to.equal(261.63);
+                expect(player.noteToFrequency('invalid')).to.be.null;
+            });
+        });
+        
+        // Audio Engine Tests
+        describe('Audio Engine', () => {
+            let audioEngine;
+            
+            beforeEach(() => {
+                audioEngine = new AudioEngine();
+            });
+            
+            it('should initialize audio context', () => {
+                audioEngine.init();
+                expect(audioEngine.isInitialized).to.be.true;
+            });
+            
+            it('should handle zero duration gracefully', () => {
+                audioEngine.init();
+                expect(() => audioEngine.playNote(440, 0)).to.not.throw();
+            });
+        });
+        
+        // MIDI Parser Tests
+        describe('MIDI Parser', () => {
+            let parser;
+            
+            beforeEach(() => {
+                parser = new MidiParser();
+            });
+            
+            it('should initialize correctly', () => {
+                expect(parser).to.not.be.null;
+                expect(parser.parse).to.be.a('function');
+            });
+            
+            it('should handle empty input', () => {
+                const result = parser.parse(new ArrayBuffer(0));
+                expect(result).to.not.be.null;
+            });
+        });
+        
+        // Integration Tests
+        describe('Integration', () => {
+            it('should handle duration 0 across all modules', () => {
+                const storage = new StorageModule();
+                const player = new MusicPlayer();
+                
+                const pattern = [
+                    {"beat": "kick", "dur": 1},
+                    {"beat": "snare", "dur": 0}
+                ];
+                
+                // Storage accepts
+                expect(storage.validatePattern(pattern, 'beat')).to.be.true;
+                
+                // Player calculates correctly
+                const duration = player.calculatePatternDuration(pattern, 'beat');
+                expect(duration).to.equal(1); // Only kick counted
+                
+                // Visualization ignores
+                document.body.innerHTML = '<div id="beat-input"></div><div id="beat-viz"></div>';
+                const testPlayer = new MusicPlayer();
+                testPlayer.beatInput.value = JSON.stringify(pattern);
+                testPlayer.visualizePattern('beat');
+                
+                const vizItems = testPlayer.beatViz.querySelectorAll('.viz-item');
+                expect(vizItems).to.have.length(1); // Only kick
+            });
+        });
+        
+        // Run tests and show summary
+        mocha.run((failures) => {
+            const summary = document.getElementById('test-summary');
+            const total = document.querySelectorAll('.test').length;
+            const passed = total - failures;
+            
+            summary.innerHTML = `
+                <h2>Test Results</h2>
+                <p class="${failures === 0 ? 'pass' : 'fail'}">
+                    ${failures === 0 ? '✅ All tests passed!' : `❌ ${failures} test(s) failed`}
+                </p>
+                <p>Total: ${total}, Passed: ${passed}, Failed: ${failures}</p>
+                <p><a href="index.html">← Back to Music Player</a></p>
+            `;
+        });
+    </script>
+</body>
+</html>

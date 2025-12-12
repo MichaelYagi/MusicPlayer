@@ -1,0 +1,32 @@
+{
+  "all": true,
+  "include": [
+    "js/**/*.js"
+  ],
+  "exclude": [
+    "js/**/test*",
+    "js/**/spec*",
+    "test/**/*"
+  ],
+  "reporter": [
+    "html",
+    "text",
+    "lcov"
+  ],
+  "report-dir": "./coverage",
+  "check-coverage": true,
+  "lines": 80,
+  "functions": 80,
+  "branches": 80,
+  "statements": 80,
+  "watermarks": {
+    "lines": [50, 80, 95],
+    "functions": [50, 80, 95],
+    "branches": [50, 80, 95],
+    "statements": [50, 80, 95]
+  },
+  "cache": false,
+  "clean": true,
+  "hook-run-in-context": true,
+  "hookRequire": true
+}

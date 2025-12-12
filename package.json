@@ -1,0 +1,29 @@
+{
+  "name": "music-player",
+  "version": "1.0.0",
+  "description": "A web-based music player with beat and melody pattern support",
+  "main": "index.html",
+  "scripts": {
+    "test": "mocha test/**/*.js",
+    "test:watch": "mocha test/**/*.js --watch",
+    "test:coverage": "nyc --reporter=html --reporter=text mocha test/**/*.js",
+    "test:coverage:lcov": "nyc --reporter=lcov mocha test/**/*.js",
+    "test:browser": "python -m http.server 8000",
+    "test:runner": "start http://localhost:8000/test/runner.html",
+    "lint": "echo 'No linting configured yet'",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": ["music", "audio", "web-audio", "midi", "patterns"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "chai": "^4.3.7",
+    "jsdom": "^22.1.0",
+    "@babel/core": "^7.22.0",
+    "@babel/preset-env": "^7.22.0",
+    "@babel/register": "^7.21.0",
+    "nyc": "^15.1.0"
+  },
+  "dependencies": {}
+}

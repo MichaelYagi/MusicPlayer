@@ -1,0 +1,11 @@
+// Mocha test configuration
+module.exports = {
+    require: [
+        './test/setup.js',
+        '@babel/register'
+    ],
+    timeout: 5000,
+    recursive: true,
+    reporter: 'spec',
+    spec: 'test/**/*.test.js'
+};
