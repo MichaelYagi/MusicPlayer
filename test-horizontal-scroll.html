@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizontal Scroll Test</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .test-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .test-viz {
+            min-height: 100px;
+            background-color: #ecf0f1;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+            padding: 12px;
+            width: 100%;
+            display: block;
+            box-sizing: border-box;
+        }
+        .test-item {
+            display: inline-block;
+            background-color: #3498db;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 2px 4px;
+            min-width: 80px;
+            text-align: center;
+        }
+        .test-item.active {
+            background-color: #27ae60;
+            transform: scale(1.05);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Horizontal Scroll Test</h1>
+        <button onclick="testScroll()">Test Scroll to Item 5</button>
+        <button onclick="resetScroll()">Reset Scroll</button>
+        <div class="test-viz" id="testViz">
+            <div class="test-item">Item 1</div>
+            <div class="test-item">Item 2</div>
+            <div class="test-item">Item 3</div>
+            <div class="test-item">Item 4</div>
+            <div class="test-item" id="targetItem">Item 5</div>
+            <div class="test-item">Item 6</div>
+            <div class="test-item">Item 7</div>
+            <div class="test-item">Item 8</div>
+            <div class="test-item">Item 9</div>
+            <div class="test-item">Item 10</div>
+        </div>
+    </div>
+
+    <script>
+        function testScroll() {
+            const viz = document.getElementById('testViz');
+            const targetItem = document.getElementById('targetItem');
+            
+            // Remove active class from all items
+            document.querySelectorAll('.test-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to target
+            targetItem.classList.add('active');
+            
+            // Simple scroll to active item
+            try {
+                const vizRect = viz.getBoundingClientRect();
+                const itemRect = targetItem.getBoundingClientRect();
+                
+                // Calculate if item is outside visible area
+                const itemLeft = itemRect.left - vizRect.left;
+                const itemRight = itemRect.right - vizRect.left;
+                const vizWidth = vizRect.width;
+                
+                // Scroll if item is not fully visible
+                if (itemLeft < 0 || itemRight > vizWidth) {
+                    // Calculate target scroll position to center item
+                    const itemCenter = itemLeft + (itemRect.width / 2);
+                    const targetScrollLeft = viz.scrollLeft + itemCenter - (vizWidth / 2);
+                    
+                    // Apply scroll with bounds checking
+                    const maxScrollLeft = viz.scrollWidth - viz.clientWidth;
+                    const finalScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScrollLeft));
+                    
+                    viz.scrollLeft = finalScrollLeft;
+                    
+                    console.log('Scrolled to target item:', {
+                        itemLeft,
+                        itemRight,
+                        vizWidth,
+                        targetScrollLeft,
+                        finalScrollLeft,
+                        maxScrollLeft
+                    });
+                }
+            } catch (error) {
+                console.error('Error scrolling to target item:', error);
+            }
+        }
+        
+        function resetScroll() {
+            const viz = document.getElementById('testViz');
+            viz.scrollLeft = 0;
+            document.querySelectorAll('.test-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+    </script>
+</body>
+</html>

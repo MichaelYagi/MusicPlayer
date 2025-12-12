@@ -83,6 +83,11 @@ class MusicPlayer {
             melody: []
         };
         
+        this.scrollTrackers = {
+            beat: null,
+            melody: null
+        };
+        
         // Default example patterns
         this.defaultBeatPattern = `[
   {"beat": "kick", "dur": 1, "vol": [1]},
@@ -1899,9 +1904,6 @@ class MusicPlayer {
         // Clear existing visualization
         viz.innerHTML = '';
         
-        // Store current scroll position to maintain it
-        const currentScrollLeft = viz.scrollLeft;
-        
         // Calculate total duration for positioning
         const totalDuration = data.reduce((total, item) => total + ((item && typeof item.dur === 'number') ? item.dur : 1), 0);
         
@@ -1921,18 +1923,11 @@ class MusicPlayer {
             const vizItem = document.createElement('div');
             vizItem.className = 'viz-item';
             
-            // Calculate position based on cumulative time
-            const startPosition = (currentTime / totalDuration) * 100;
-            const widthPercent = (duration / totalDuration) * 100;
-            
-            vizItem.style.left = `${startPosition}%`;
-            vizItem.style.width = `${widthPercent}%`;
-            
             const label = type === 'beat' ? item.beat : item.note;
             vizItem.textContent = label;
             vizItem.title = `${label} (${(item.dur || 1).toFixed(1)} beats)`;
             
-            // Add data attributes for debugging
+            // Add data attributes for debugging and scroll tracking
             vizItem.dataset.index = index;
             vizItem.dataset.startTime = startTime;
             vizItem.dataset.duration = duration;
@@ -1940,11 +1935,17 @@ class MusicPlayer {
             
             viz.appendChild(vizItem);
 
-            // Schedule highlighting
+            // Schedule highlighting with simple scroll
             const highlightTimer = setTimeout(() => {
                 vizItem.classList.add('active');
+                console.log(`Added active class to ${type} item ${index}:`, label);
+                
+                // Simple scroll to active item
+                this.scrollToActiveItem(viz, vizItem);
+                
                 setTimeout(() => {
                     vizItem.classList.remove('active');
+                    console.log(`Removed active class from ${type} item ${index}:`, label);
                 }, duration * 1000 - 100); // Remove highlight just before next item
             }, startTime * 1000);
             
@@ -1964,21 +1965,55 @@ class MusicPlayer {
                 startTime: data.slice(0, i).reduce((sum, prev) => sum + (prev.dur || 1), 0) * beatDuration
             }))
         });
-        
-        // Restore scroll position or scroll to end if new content extends beyond current view
-        requestAnimationFrame(() => {
-            const maxScrollLeft = viz.scrollWidth - viz.clientWidth;
-            if (currentScrollLeft > maxScrollLeft) {
-                // Content shrank, adjust scroll back
-                viz.scrollLeft = maxScrollLeft;
-            } else if (viz.scrollWidth > viz.clientWidth && currentScrollLeft >= maxScrollLeft - 100) {
-                // New content added and we're near the end, scroll to show new content
-                viz.scrollLeft = maxScrollLeft;
-            } else {
-                // Restore original scroll position
-                viz.scrollLeft = currentScrollLeft;
+    }
+    
+    scrollToActiveItem(viz, activeItem) {
+        // Simple, reliable scroll to active item using scrollIntoView
+        try {
+            // Use scrollIntoView with options for smooth horizontal scrolling
+            activeItem.scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest'
+            });
+            
+            console.log('Scrolled to active item using scrollIntoView');
+        } catch (error) {
+            // Fallback to manual scroll calculation
+            try {
+                const vizRect = viz.getBoundingClientRect();
+                const itemRect = activeItem.getBoundingClientRect();
+                
+                // Calculate if item is outside visible area
+                const itemLeft = itemRect.left - vizRect.left;
+                const itemRight = itemRect.right - vizRect.left;
+                const vizWidth = vizRect.width;
+                
+                // Scroll if item is not fully visible
+                if (itemLeft < 0 || itemRight > vizWidth) {
+                    // Calculate target scroll position to center item
+                    const itemCenter = itemLeft + (itemRect.width / 2);
+                    const targetScrollLeft = viz.scrollLeft + itemCenter - (vizWidth / 2);
+                    
+                    // Apply scroll with bounds checking
+                    const maxScrollLeft = viz.scrollWidth - viz.clientWidth;
+                    const finalScrollLeft = Math.max(0, Math.min(targetScrollLeft, maxScrollLeft));
+                    
+                    viz.scrollLeft = finalScrollLeft;
+                    
+                    console.log('Scrolled to active item using fallback method:', {
+                        itemLeft,
+                        itemRight,
+                        vizWidth,
+                        targetScrollLeft,
+                        finalScrollLeft,
+                        maxScrollLeft
+                    });
+                }
+            } catch (fallbackError) {
+                console.error('Error in fallback scroll method:', fallbackError);
             }
-        });
+        }
     }
     
     clearPlaybackVisualization() {
@@ -1992,6 +2027,14 @@ class MusicPlayer {
             
             this.playbackTimers.beat = [];
             this.playbackTimers.melody = [];
+        }
+        
+        // Clear scroll trackers
+        if (this.scrollTrackers) {
+            Object.values(this.scrollTrackers).forEach(tracker => {
+                if (tracker) clearInterval(tracker);
+            });
+            this.scrollTrackers = {};
         }
         
         // Clear text highlights

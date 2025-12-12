@@ -521,6 +521,10 @@ h1 {
     width: 100%;
     display: block;
     box-sizing: border-box;
+    /* Ensure proper scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Force horizontal scrollbar when needed */
+    overflow-x: scroll;
 }
 
 .viz-item {
