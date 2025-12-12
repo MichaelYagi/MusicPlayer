@@ -1,6 +1,0 @@
-1:1:665:                        const instrument = n.instrument || 'sine';
-2:2:1863:                                        <input type="text" value="${note.instrument || 'sine'}" data-field="instrument" data-chord-index="${noteIndex}" data-index="${index}" placeholder="instrument">
-3:3:1871:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
-4:4:1879:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
-5:5:1891:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
-6:6:1899:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
