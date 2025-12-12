@@ -714,7 +714,10 @@ class MusicPlayer {
             patternItems = pattern.notes;
         }
         
-        return patternItems.reduce((total, item) => total + (item.dur || 1), 0);
+        return patternItems.reduce((total, item) => {
+            const duration = item.dur || 1;
+            return duration !== 0 ? total + duration : total;
+        }, 0);
     }
     
     playBeatPattern(beatPattern = [], bpm = 300) {
@@ -737,6 +740,12 @@ class MusicPlayer {
         let startTime = this.audioEngine.audioContext.currentTime;
 
         patternItems.forEach(step => {
+            // Skip items with duration 0 - check at the very beginning
+            const itemDuration = step.dur || 1;
+            if (itemDuration === 0) {
+                return; // Skip this item entirely - no sound, no timing
+            }
+            
             let stepBeats;
 
             if (typeof step.dur === "number" && isFinite(step.dur)) {
@@ -758,7 +767,7 @@ class MusicPlayer {
 
             const stepDuration = beatSec * stepBeats;
 
-            if (step.beat !== "rest" && (step.dur || 1) !== 0) {
+            if (step.beat !== "rest") {
                 // single type
                 if (step.beat) {
                     const dur = step.dur || stepBeats;
@@ -819,6 +828,12 @@ class MusicPlayer {
         let totalDuration = 0;
 
         patternItems.forEach(step => {
+            // Skip items with duration 0 - check at the very beginning
+            const itemDuration = step.dur || 1;
+            if (itemDuration === 0) {
+                return; // Skip this item entirely - no sound, no timing
+            }
+            
             // determine step length by shortest note
             let stepBeats;
             if (typeof step.dur === "number" && isFinite(step.dur)) {
@@ -883,7 +898,7 @@ class MusicPlayer {
                     freq = this.noteToFrequency(step.note);
                 }
 
-                if (step.beat !== "rest" && freq && (step.dur || 1) !== 0) {
+                if (step.note !== "rest" && freq) {
                     const noteDuration = beatSec * step.dur;
                     if (step.instrument === "piano") {
                         this.playPianoTone(freq, startTime, noteDuration);
@@ -929,6 +944,11 @@ class MusicPlayer {
     }
 
     scheduleHit(type, time, duration, vol = 1) {
+        // Skip duration 0 items
+        if (duration <= 0) {
+            return;
+        }
+        
         if (type === "hihat") this.playHiHatBeat(time, duration, vol);
         else if (type === "kick") this.playKickBeat(time, duration, vol);
         else if (type === "snare") this.playSnareBeat(time, duration, vol);
@@ -936,6 +956,11 @@ class MusicPlayer {
     }
 
     playHiHatBeat(time, duration = 0.2, vol = 1) {
+        // Skip duration 0 beats
+        if (duration <= 0) {
+            return;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const bufferSize = audioCtx.sampleRate * duration;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -985,6 +1010,11 @@ class MusicPlayer {
     }
 
     playKickBeat(time, duration = 0.3, vol = 1) {
+        // Skip duration 0 beats
+        if (duration <= 0) {
+            return;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         // Sub-bass sine sweep
         const osc = audioCtx.createOscillator();
@@ -1045,6 +1075,11 @@ class MusicPlayer {
     }
 
     playSnareBeat(time, duration = 0.2, vol = 1) {
+        // Skip duration 0 beats
+        if (duration <= 0) {
+            return;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const bufferSize = audioCtx.sampleRate * duration;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -1096,6 +1131,11 @@ class MusicPlayer {
     }
 
     playClapBeat(time, duration = 0.12) {
+        // Skip duration 0 beats
+        if (duration <= 0) {
+            return;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const bufferSize = audioCtx.sampleRate * duration;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
@@ -1169,6 +1209,11 @@ class MusicPlayer {
     }
 
     playPianoTone(freq, startTime, duration, vol = [1]) {
+        // Skip duration 0 notes
+        if (duration <= 0) {
+            return null;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -1193,6 +1238,11 @@ class MusicPlayer {
     }
 
     playStringTone(freq, startTime, duration, vol = [1]) {
+        // Skip duration 0 notes
+        if (duration <= 0) {
+            return null;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -1226,6 +1276,11 @@ class MusicPlayer {
     }
 
     playElectricGuitarTone(freq, startTime, duration, vol = [1]) {
+        // Skip duration 0 notes
+        if (duration <= 0) {
+            return null;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -1260,6 +1315,11 @@ class MusicPlayer {
     }
 
     playAcousticGuitarTone(freq, startTime, duration, vol = [1]) {
+        // Skip duration 0 notes
+        if (duration <= 0) {
+            return null;
+        }
+        
         const audioCtx = this.audioEngine.audioContext;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -2045,12 +2105,18 @@ class MusicPlayer {
         // Clear existing visualization
         viz.innerHTML = '';
         
+        // Filter out items with duration 0
+        const filteredItems = patternItems.filter(item => {
+            const duration = item && typeof item.dur === 'number' ? item.dur : 1;
+            return duration !== 0;
+        });
+        
         // Calculate total duration for positioning
-        const totalDuration = patternItems.reduce((total, item) => total + ((item && typeof item.dur === 'number') ? item.dur : 1), 0);
+        const totalDuration = filteredItems.reduce((total, item) => total + ((item && typeof item.dur === 'number') ? item.dur : 1), 0);
         
         let currentTime = 0;
         
-        patternItems.forEach((item, index) => {
+        filteredItems.forEach((item, index) => {
             if (!item || typeof item !== 'object') {
                 console.warn(`Invalid ${type} pattern item at index ${index}:`, item);
                 return;
@@ -2098,13 +2164,14 @@ class MusicPlayer {
         
         console.log(`Visualization for ${type}:`, {
             totalItems: patternItems.length,
+            filteredItems: filteredItems.length,
             totalDuration: totalDuration,
             tempo: tempo,
-            items: patternItems.map((item, i) => ({
+            items: filteredItems.map((item, i) => ({
                 index: i,
                 label: type === 'beat' ? item.beat : item.note,
                 duration: item.dur || 1,
-                startTime: patternItems.slice(0, i).reduce((sum, prev) => sum + (prev.dur || 1), 0) * beatDuration
+                startTime: filteredItems.slice(0, i).reduce((sum, prev) => sum + (prev.dur || 1), 0) * beatDuration
             }))
         });
     }

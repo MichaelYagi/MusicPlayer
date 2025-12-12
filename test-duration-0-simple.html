@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Duration 0 Test</title>
+</head>
+<body>
+    <h1>Simple Duration 0 Test</h1>
+    <div id="results"></div>
+    
+    <script src="js/storage.js"></script>
+    <script src="js/audio-engine.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        const player = new MusicPlayer();
+        
+        // Simple test pattern
+        const pattern = [
+            {"beat": "kick", "dur": 0.5},
+            {"beat": "snare", "dur": 0},  // Should be ignored
+            {"beat": "kick", "dur": 0.5}
+        ];
+        
+        results.innerHTML += '<p>Testing pattern: ' + JSON.stringify(pattern) + '</p>';
+        
+        // Check duration calculation
+        const duration = player.calculatePatternDuration(pattern, 'beat');
+        results.innerHTML += '<p>Calculated duration: ' + duration + ' (expected: 1.0)</p>';
+        
+        // Test visualization
+        player.beatInput.value = JSON.stringify(pattern);
+        player.visualizePattern('beat');
+        
+        const vizItems = player.beatViz.querySelectorAll('.viz-item');
+        results.innerHTML += '<p>Visualization items: ' + vizItems.length + ' (expected: 2)</p>';
+        
+        const labels = Array.from(vizItems).map(item => item.textContent);
+        results.innerHTML += '<p>Visualization labels: ' + labels.join(', ') + ' (expected: kick, kick)</p>';
+        
+        // Check if snare is excluded
+        const hasSnare = labels.includes('snare');
+        results.innerHTML += '<p>Snare excluded: ' + (!hasSnare ? '✅ YES' : '❌ NO') + '</p>';
+    </script>
+</body>
+</html>
