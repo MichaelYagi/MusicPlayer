@@ -412,7 +412,7 @@ class MusicPlayer {
         const hints = [];
         const issues = [];
         
-        // Validate BPM if present
+        // Validate BPM if present - this should happen even if patternItems is empty
         if (bpm !== null && bpm !== undefined) {
             if (typeof bpm !== 'number' || bpm <= 0 || bpm > 300) {
                 issues.push(`Invalid BPM: ${bpm}. Must be a number between 1 and 300`);

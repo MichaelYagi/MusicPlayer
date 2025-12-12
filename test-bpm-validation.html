@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPM Validation Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; }
+        .pass { background-color: #d4edda; color: #155724; }
+        .fail { background-color: #f8d7da; color: #721c24; }
+        .pattern { background-color: #f8f9fa; padding: 10px; margin: 10px 0; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>BPM Validation Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Cases</h2>
+        <button onclick="runTests()">Run All Tests</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/storage.js"></script>
+    
+    <script>
+        let player;
+        let storage;
+        
+        function init() {
+            player = new MusicPlayer();
+            storage = new StorageModule();
+        }
+        
+        function runTests() {
+            const results = document.getElementById('results');
+            results.innerHTML = '';
+            
+            // Test cases for BPM validation
+            const testCases = [
+                {
+                    name: "Valid BPM (120)",
+                    pattern: {
+                        bpm: 120,
+                        pattern: [
+                            {"beat": "kick", "dur": 1, "vol": [1]},
+                            {"beat": "snare", "dur": 1, "vol": [0.8]}
+                        ]
+                    },
+                    type: "beat",
+                    shouldPass: true
+                },
+                {
+                    name: "Invalid BPM (0)",
+                    pattern: {
+                        bpm: 0,
+                        pattern: [
+                            {"beat": "kick", "dur": 1, "vol": [1]}
+                        ]
+                    },
+                    type: "beat",
+                    shouldPass: false
+                },
+                {
+                    name: "Invalid BPM (-50)",
+                    pattern: {
+                        bpm: -50,
+                        pattern: [
+                            {"beat": "kick", "dur": 1, "vol": [1]}
+                        ]
+                    },
+                    type: "beat",
+                    shouldPass: false
+                },
+                {
+                    name: "Invalid BPM (500)",
+                    pattern: {
+                        bpm: 500,
+                        pattern: [
+                            {"beat": "kick", "dur": 1, "vol": [1]}
+                        ]
+                    },
+                    type: "beat",
+                    shouldPass: false
+                },
+                {
+                    name: "Invalid BPM (string)",
+                    pattern: {
+                        bpm: "120",
+                        pattern: [
+                            {"beat": "kick", "dur": 1, "vol": [1]}
+                        ]
+                    },
+                    type: "beat",
+                    shouldPass: false
+                },
+                {
+                    name: "Valid BPM for melody",
+                    pattern: {
+                        bpm: 140,
+                        notes: [
+                            {"note": "C4", "dur": 1, "vol": [0.8]},
+                            {"note": "E4", "dur": 1, "vol": [0.7]}
+                        ]
+                    },
+                    type: "melody",
+                    shouldPass: true
+                },
+                {
+                    name: "No BPM (should pass)",
+                    pattern: [
+                        {"beat": "kick", "dur": 1, "vol": [1]},
+                        {"beat": "snare", "dur": 1, "vol": [0.8]}
+                    ],
+                    type: "beat",
+                    shouldPass: true
+                }
+            ];
+            
+            testCases.forEach((testCase, index) => {
+                const resultDiv = document.createElement('div');
+                resultDiv.className = 'result';
+                
+                // Test main.js validation
+                const mainResult = player.validatePatternAndShowHints(testCase.pattern, testCase.type);
+                
+                // Test storage.js validation
+                const storageResult = storage.validatePattern(testCase.pattern, testCase.type);
+                
+                const mainPassed = mainResult ? mainResult.isValid : false;
+                const storagePassed = storageResult;
+                
+                const bothPassed = mainPassed === testCase.shouldPass && storagePassed === testCase.shouldPass;
+                
+                resultDiv.className += bothPassed ? ' pass' : ' fail';
+                
+                resultDiv.innerHTML = `
+                    <h3>Test ${index + 1}: ${testCase.name}</h3>
+                    <div class="pattern">${JSON.stringify(testCase.pattern, null, 2)}</div>
+                    <p><strong>Expected:</strong> ${testCase.shouldPass ? 'PASS' : 'FAIL'}</p>
+                    <p><strong>Main.js Result:</strong> ${mainPassed ? 'PASS' : 'FAIL'} ${mainResult ? `(Issues: ${mainResult.issues.join(', ')})` : ''}</p>
+                    <p><strong>Storage.js Result:</strong> ${storagePassed ? 'PASS' : 'FAIL'}</p>
+                    <p><strong>Overall:</strong> ${bothPassed ? '✅ PASS' : '❌ FAIL'}</p>
+                `;
+                
+                results.appendChild(resultDiv);
+            });
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

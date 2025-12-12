@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPM Validation Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .result { margin: 10px 0; padding: 10px; }
+        .pass { background-color: #d4edda; color: #155724; }
+        .fail { background-color: #f8d7da; color: #721c24; }
+        .pattern { background-color: #f8f9fa; padding: 10px; margin: 10px 0; font-family: monospace; white-space: pre; }
+        input { width: 100%; height: 100px; font-family: monospace; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>BPM Validation Debug</h1>
+    
+    <div class="test-section">
+        <h2>Manual Test</h2>
+        <label>Beat Pattern (try with invalid BPM):</label>
+        <textarea id="beatInput" rows="8" cols="50">{
+  "bpm": 350,
+  "beats": [
+    {"beat": "kick", "dur": 1, "vol": [1]}
+  ]
+}</textarea>
+        <br>
+        <button onclick="testValidation()">Test Validation</button>
+        <button onclick="testPlay()">Test Play</button>
+        <div id="results"></div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        let player;
+        
+        function init() {
+            player = new MusicPlayer();
+        }
+        
+        function testValidation() {
+            const results = document.getElementById('results');
+            const beatInput = document.getElementById('beatInput').value;
+            
+            try {
+                const beatPattern = JSON.parse(beatInput);
+                console.log("Parsed pattern:", beatPattern);
+                
+                const validation = player.validatePatternAndShowHints(beatPattern, 'beat');
+                console.log("Validation result:", validation);
+                
+                results.innerHTML = `
+                    <div class="result ${validation && validation.isValid ? 'pass' : 'fail'}">
+                        <h3>Validation Result</h3>
+                        <p><strong>Valid:</strong> ${validation ? validation.isValid : 'null'}</p>
+                        <p><strong>Issues:</strong> ${validation ? validation.issues.join(', ') : 'none'}</p>
+                        <p><strong>Hints:</strong> ${validation ? validation.hints.join(', ') : 'none'}</p>
+                    </div>
+                `;
+            } catch (error) {
+                results.innerHTML = `
+                    <div class="result fail">
+                        <h3>Parse Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function testPlay() {
+            const beatInput = document.getElementById('beatInput').value;
+            player.beatInput.value = beatInput;
+            player.melodyInput.value = ''; // Empty melody
+            
+            try {
+                player.play();
+            } catch (error) {
+                console.error("Play error:", error);
+            }
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

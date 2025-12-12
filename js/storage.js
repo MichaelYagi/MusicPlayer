@@ -370,7 +370,7 @@ class StorageModule {
             return false;
         }
         
-        // Validate BPM if present
+        // Validate BPM if present - this should happen even if patternItems is empty
         if (bpm !== null && bpm !== undefined) {
             if (typeof bpm !== 'number' || bpm <= 0 || bpm > 300) {
                 console.error('Invalid BPM:', bpm);
