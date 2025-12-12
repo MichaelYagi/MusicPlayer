@@ -10,6 +10,7 @@ class MusicPlayer {
         // DOM element references
         this.playBtn = document.getElementById('play-btn');
         this.stopBtn = document.getElementById('stop-btn');
+        this.autoScrollBtn = document.getElementById('autoscroll-btn');
         this.beatInput = document.getElementById('beat-input');
         this.melodyInput = document.getElementById('melody-input');
         this.statusBox = document.getElementById('status-box');
@@ -65,7 +66,7 @@ class MusicPlayer {
         this.isPlaying = false;
 
         this.tempo = 120; // Default BPM
-        this.autoScrollDuringPlayback = false; // Default to no auto-scroll
+        this.autoScrollDuringPlayback = true; // Default to auto-scroll enabled
         
 
         
@@ -254,6 +255,7 @@ class MusicPlayer {
         // Add event listeners
         this.playBtn.addEventListener('click', () => this.handlePlay());
         this.stopBtn.addEventListener('click', () => this.handleStop());
+        this.autoScrollBtn.addEventListener('click', () => this.toggleAutoScroll());
 
         // Add tempo control listener
         this.tempoSlider.addEventListener('input', () => {
@@ -1869,6 +1871,13 @@ class MusicPlayer {
         this.updateStatus(`Solo: ${soloedTrack.charAt(0).toUpperCase() + soloedTrack.slice(1)}`);
     }
     
+    toggleAutoScroll() {
+        this.autoScrollDuringPlayback = !this.autoScrollDuringPlayback;
+        this.autoScrollBtn.textContent = `Auto-Scroll: ${this.autoScrollDuringPlayback ? 'ON' : 'OFF'}`;
+        this.autoScrollBtn.classList.toggle('active', this.autoScrollDuringPlayback);
+        this.updateStatus(`Auto-scroll ${this.autoScrollDuringPlayback ? 'enabled' : 'disabled'}`);
+    }
+    
     // Editor Switching
     switchEditor(editor) {
         // Update tab buttons
@@ -2088,20 +2097,28 @@ class MusicPlayer {
     }
     
     scrollToActiveItem(viz, activeItem) {
-        // Disable automatic scrolling to prevent focus jumping
-        // Only scroll if user has manually scrolled away and item is completely invisible
+        // Smooth horizontal scrolling to keep active item visible
         try {
             const vizRect = viz.getBoundingClientRect();
             const itemRect = activeItem.getBoundingClientRect();
             
-            // Calculate if item is completely outside visible area (no padding)
+            // Calculate item position relative to visualization container
             const itemLeft = itemRect.left - vizRect.left;
             const itemRight = itemRect.right - vizRect.left;
             const vizWidth = vizRect.width;
             
-            // Only scroll if item is completely invisible (very restrictive)
-            if (itemLeft > vizWidth || itemRight < 0) {
-                console.log('Item completely invisible, scrolling to show it');
+            // Check if item needs scrolling (not fully visible with some padding)
+            const padding = 50; // 50px padding on each side
+            const needsScroll = itemLeft < padding || itemRight > (vizWidth - padding);
+            
+            if (needsScroll) {
+                console.log('Scrolling to active item:', {
+                    itemLeft,
+                    itemRight,
+                    vizWidth,
+                    needsScroll
+                });
+                
                 // Use scrollIntoView with options for smooth horizontal scrolling
                 activeItem.scrollIntoView({
                     behavior: 'smooth',
