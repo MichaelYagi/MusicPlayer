@@ -473,8 +473,8 @@ class MusicPlayer {
                 });
             }
             
-            if (item.dur !== undefined && (typeof item.dur !== 'number' || item.dur <= 0)) {
-                issues.push('"dur" must be a positive number');
+            if (item.dur !== undefined && (typeof item.dur !== 'number' || item.dur < 0)) {
+                issues.push('"dur" must be a non-negative number');
                 hints.push('Example: {"beat": "kick", "dur": 1} for one beat, or {"beat": "kick", "dur": 0.5} for half beat');
             }
             
@@ -514,8 +514,8 @@ class MusicPlayer {
                 });
             }
             
-            if (item.dur !== undefined && (typeof item.dur !== 'number' || item.dur <= 0)) {
-                issues.push('"dur" must be a positive number');
+            if (item.dur !== undefined && (typeof item.dur !== 'number' || item.dur < 0)) {
+                issues.push('"dur" must be a non-negative number');
                 hints.push('Example: {"note": "C4", "dur": 1} for one beat, or {"note": "C4", "dur": 0.25} for quarter beat');
             }
             
@@ -758,7 +758,7 @@ class MusicPlayer {
 
             const stepDuration = beatSec * stepBeats;
 
-            if (step.beat !== "rest") {
+            if (step.beat !== "rest" && (step.dur || 1) !== 0) {
                 // single type
                 if (step.beat) {
                     const dur = step.dur || stepBeats;
@@ -883,7 +883,7 @@ class MusicPlayer {
                     freq = this.noteToFrequency(step.note);
                 }
 
-                if (step.beat !== "rest" && freq) {
+                if (step.beat !== "rest" && freq && (step.dur || 1) !== 0) {
                     const noteDuration = beatSec * step.dur;
                     if (step.instrument === "piano") {
                         this.playPianoTone(freq, startTime, noteDuration);

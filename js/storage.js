@@ -384,7 +384,7 @@ class StorageModule {
                 
                 const isObject = typeof item === 'object';
                 const hasBeatOrBeats = typeof item.beat === 'string' || Array.isArray(item.beats);
-                const hasDur = typeof (item.dur || 1) === 'number';
+                const hasDur = item.hasOwnProperty('dur') ? typeof item.dur === 'number' : true; // Allow missing dur (defaults to 1) or explicit 0
                 
                 // For chord items, vol is optional (uses individual beat volumes)
                 // For single items, vol is optional (defaults to 1.0)
@@ -435,7 +435,7 @@ class StorageModule {
                 
                 const isObject = typeof item === 'object';
                 const hasNoteOrNotes = typeof item.note === 'string' || Array.isArray(item.notes) || typeof item.freq === 'number';
-                const hasDur = typeof (item.dur || 1) === 'number';
+                const hasDur = item.hasOwnProperty('dur') ? typeof item.dur === 'number' : true; // Allow missing dur (defaults to 1) or explicit 0
                 
                 // For chord items, vol is optional (uses individual note volumes)
                 // For single items, vol is optional (defaults to 1.0)

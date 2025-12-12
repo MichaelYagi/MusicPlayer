@@ -1,0 +1,6 @@
+665:                        const instrument = n.instrument || 'sine';
+1863:                                        <input type="text" value="${note.instrument || 'sine'}" data-field="instrument" data-chord-index="${noteIndex}" data-index="${index}" placeholder="instrument">
+1871:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
+1879:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
+1891:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>
+1899:                        <td><input type="text" value="${item.instrument || 'sine'}" data-field="instrument" data-index="${index}"></td>

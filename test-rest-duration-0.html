@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Rest with Duration 0</title>
+</head>
+<body>
+    <h1>Test Rest with Duration 0</h1>
+    <div id="results"></div>
+    
+    <script src="js/storage.js"></script>
+    <script>
+        const storage = new StorageModule();
+        const results = document.getElementById('results');
+        
+        // Test patterns with rest duration 0
+        const testPatterns = {
+            beat: [
+                {"beat": "kick", "dur": 1},
+                {"beat": "rest", "dur": 0},
+                {"beat": "snare", "dur": 1}
+            ],
+            melody: [
+                {"note": "C4", "dur": 1},
+                {"note": "rest", "dur": 0},
+                {"note": "E4", "dur": 1}
+            ]
+        };
+        
+        // Test validation
+        console.log('Testing beat pattern with rest duration 0:');
+        const beatValid = storage.validatePattern(testPatterns.beat, 'beat');
+        console.log('Beat pattern valid:', beatValid);
+        
+        console.log('Testing melody pattern with rest duration 0:');
+        const melodyValid = storage.validatePattern(testPatterns.melody, 'melody');
+        console.log('Melody pattern valid:', melodyValid);
+        
+        results.innerHTML = `
+            <h2>Validation Results</h2>
+            <p>Beat pattern with rest duration 0: ${beatValid ? '✅ Valid' : '❌ Invalid'}</p>
+            <p>Melody pattern with rest duration 0: ${melodyValid ? '✅ Valid' : '❌ Invalid'}</p>
+            <h3>Test Patterns</h3>
+            <pre>${JSON.stringify(testPatterns, null, 2)}</pre>
+        `;
+        
+        // Test saving patterns
+        try {
+            storage.savePattern('beat', 'test-beat-rest-0', testPatterns.beat);
+            storage.savePattern('melody', 'test-melody-rest-0', testPatterns.melody);
+            results.innerHTML += '<p>✅ Patterns saved successfully</p>';
+        } catch (error) {
+            results.innerHTML += `<p>❌ Error saving patterns: ${error.message}</p>`;
+        }
+    </script>
+</body>
+</html>
