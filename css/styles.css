@@ -282,7 +282,7 @@ h1 {
     gap: 15px;
 }
 
-#play-btn, #stop-btn {
+#play-btn, #stop-btn, #autoscroll-btn {
     padding: 12px 24px;
     font-size: 1.1rem;
     font-weight: 600;
@@ -311,6 +311,24 @@ h1 {
 #stop-btn:hover:not(:disabled) {
     background-color: #c0392b;
     transform: translateY(-2px);
+}
+
+#autoscroll-btn {
+    background-color: #9b59b6;
+    color: white;
+}
+
+#autoscroll-btn:hover {
+    background-color: #8e44ad;
+    transform: translateY(-2px);
+}
+
+#autoscroll-btn.active {
+    background-color: #27ae60;
+}
+
+#autoscroll-btn.active:hover {
+    background-color: #229954;
 }
 
 #play-btn:disabled, #stop-btn:disabled {

@@ -256,6 +256,9 @@ class MusicPlayer {
         this.playBtn.addEventListener('click', () => this.handlePlay());
         this.stopBtn.addEventListener('click', () => this.handleStop());
         this.autoScrollBtn.addEventListener('click', () => this.toggleAutoScroll());
+        
+        // Initialize auto-scroll button state
+        this.autoScrollBtn.classList.add('active');
 
         // Add tempo control listener
         this.tempoSlider.addEventListener('input', () => {
