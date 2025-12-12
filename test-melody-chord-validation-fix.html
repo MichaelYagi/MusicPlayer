@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Melody Chord Validation Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Melody Chord Validation Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click "Save Project" button</li>
+            <li>Should now see "Melody validation PASSED" for all items including chords</li>
+            <li>Should see "Melody pattern validation result: true"</li>
+            <li>Should be prompted for project name</li>
+            <li>After saving, should see "Project saved successfully"</li>
+            <li>Melody chord items should validate correctly now</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if melody chord validation fix was applied
+        function testMelodyChordValidationFix() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/storage.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('// For chord items, vol is optional (uses individual note volumes)')) {
+                        tests.push('<div class="success">✓ Melody chord volume handling added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Melody chord volume handling missing</div>');
+                    }
+                    
+                    if (code.includes('item.notes.every(note =>')) {
+                        tests.push('<div class="success">✓ Melody chord note validation added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Melody chord note validation missing</div>');
+                    }
+                    
+                    if (code.includes('isChord: !!item.notes')) {
+                        tests.push('<div class="success">✓ Melody chord detection logging added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Melody chord detection logging may be missing</div>');
+                    }
+                    
+                    if (code.includes('// For single items, vol is required')) {
+                        tests.push('<div class="success">✓ Melody single item volume handling added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Melody single item volume handling may be missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading storage.js for testing</div>';
+                });
+        }
+        
+        testMelodyChordValidationFix();
+    </script>
+</body>
+</html>

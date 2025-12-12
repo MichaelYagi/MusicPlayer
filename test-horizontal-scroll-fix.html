@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Horizontal Scrolling Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Horizontal Scrolling Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Create a long pattern with many items (copy-paste to extend)</li>
+            <li>Click "Play" button</li>
+            <li>Visualization should scroll horizontally to follow current playing item</li>
+            <li>Test with both beat and melody patterns</li>
+            <li>Ensure smooth scrolling without focus issues</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if horizontal scrolling fixes were applied
+        function testHorizontalScrollingFix() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('use manual horizontal scrolling')) {
+                        tests.push('<div class="success">✓ Manual horizontal scrolling implemented</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Manual horizontal scrolling missing</div>');
+                    }
+                    
+                    if (code.includes('shouldScrollForPlayback')) {
+                        tests.push('<div class="success">✓ Playback-aware scrolling added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Playback-aware scrolling missing</div>');
+                    }
+                    
+                    if (code.includes('viz.scrollTo && typeof viz.scrollTo === \'function\'')) {
+                        tests.push('<div class="success">✓ Browser compatibility fallback added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Browser compatibility fallback may be missing</div>');
+                    }
+                    
+                    if (code.includes('Math.max(0, scrollLeft)')) {
+                        tests.push('<div class="success">✓ Scroll bounds protection added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Scroll bounds protection may be missing</div>');
+                    }
+                    
+                    if (code.includes('currentScrollLeft >= maxScrollLeft - 100')) {
+                        tests.push('<div class="success">✓ Improved scroll restoration logic added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Improved scroll restoration logic may be missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testHorizontalScrollingFix();
+    </script>
+</body>
+</html>

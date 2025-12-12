@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Playback Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Playback Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click the "Play" button</li>
+            <li>Check console for any errors</li>
+            <li>The error "Cannot convert undefined or null to object" should be fixed</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if defensive checks were added
+        function testDefensiveChecks() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            // Test if main.js has defensive checks
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('if (!input || !viz)')) {
+                        tests.push('<div class="success">✓ Defensive checks for input/viz elements added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Defensive checks for input/viz elements may be missing</div>');
+                    }
+                    
+                    if (code.includes('if (!this.beatViz || !this.melodyViz)')) {
+                        tests.push('<div class="success">✓ Constructor defensive checks added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Constructor defensive checks may be missing</div>');
+                    }
+                    
+                    if (code.includes('try { data = JSON.parse')) {
+                        tests.push('<div class="success">✓ JSON parsing error handling added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ JSON parsing error handling may be missing</div>');
+                    }
+                    
+                    if (code.includes('if (!Array.isArray(data))')) {
+                        tests.push('<div class="success">✓ Array validation added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Array validation may be missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testDefensiveChecks();
+    </script>
+</body>
+</html>

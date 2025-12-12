@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Scrolling Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Visualization Scrolling Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click "Play" button</li>
+            <li>Visualization should scroll automatically to show current playing item</li>
+            <li>Text areas should scroll to highlighted lines without stealing focus</li>
+            <li>Test with longer patterns that extend beyond visible area</li>
+            <li>Scroll position should be maintained when switching between editors</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if scrolling fixes were applied
+        function testScrollingFix() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('Smart scrolling: only scroll if item is not visible')) {
+                        tests.push('<div class="success">✓ Smart scrolling for visualization items added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Smart scrolling for visualization items missing</div>');
+                    }
+                    
+                    if (code.includes('Store current scroll position to maintain it')) {
+                        tests.push('<div class="success">✓ Scroll position preservation added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Scroll position preservation missing</div>');
+                    }
+                    
+                    if (code.includes('requestAnimationFrame(() => {')) {
+                        tests.push('<div class="success">✓ Smooth scroll restoration with requestAnimationFrame added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Smooth scroll restoration may be missing</div>');
+                    }
+                    
+                    if (code.includes('Only scroll if highlighted line is not already visible')) {
+                        tests.push('<div class="success">✓ Conditional textarea scrolling added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Conditional textarea scrolling missing</div>');
+                    }
+                    
+                    if (code.includes('const isVisibleHorizontally =')) {
+                        tests.push('<div class="success">✓ Horizontal visibility check for scrolling added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Horizontal visibility check may be missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testScrollingFix();
+    </script>
+</body>
+</html>

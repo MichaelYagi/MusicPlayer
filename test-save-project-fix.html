@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Save Project Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Save Project Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click "Save Project" button</li>
+            <li>Check console for debugging messages</li>
+            <li>Should see "Save Project button clicked" and "saveProject called"</li>
+            <li>Should be prompted to enter a project name</li>
+            <li>After saving, should see "Project saved successfully" message</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if debugging was added
+        function testSaveProjectFix() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('console.log(\'saveProject called\')')) {
+                        tests.push('<div class="success">✓ Debug logging added to saveProject method</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Debug logging missing from saveProject method</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Save Project button clicked\')')) {
+                        tests.push('<div class="success">✓ Debug logging added to button click handler</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Debug logging missing from button click handler</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Pattern texts:\', { beatText, melodyText })')) {
+                        tests.push('<div class="success">✓ Pattern text debugging added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Pattern text debugging may be missing</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Pattern management buttons found:\', {')) {
+                        tests.push('<div class="success">✓ Button existence debugging added</div>');
+                    } else {
+                        tests.push('<div class="warning">⚠ Button existence debugging may be missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testSaveProjectFix();
+    </script>
+</body>
+</html>

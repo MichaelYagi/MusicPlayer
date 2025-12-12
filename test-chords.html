@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chord Interface</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Chord Interface Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Click on "Grid Editor" tab</li>
+            <li>Look at the Melody Pattern Grid</li>
+            <li>You should see a chord item: "[chord: 3 notes]"</li>
+            <li>Click on the chord header to expand it</li>
+            <li>You should see 3 note inputs with note, duration, volume, and instrument fields</li>
+            <li>Try editing the note values</li>
+            <li>Try clicking "+ Add Note" button</li>
+            <li>Try clicking "×" to remove a note</li>
+            <li>Switch back to JSON Editor tab to see if changes are reflected</li>
+        </ol>
+    </div>
+
+    <script>
+        // Simple test to check if required methods exist
+        function testImplementation() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            // Test if main.js has been updated
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('toggleChordExpansion(\'melody\'')) {
+                        tests.push('<div class="success">✓ Melody chord expansion support found</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Melody chord expansion support missing</div>');
+                    }
+                    
+                    if (code.includes('addChordItem')) {
+                        tests.push('<div class="success">✓ Add chord item method found</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Add chord item method missing</div>');
+                    }
+                    
+                    if (code.includes('data-field="instrument"')) {
+                        tests.push('<div class="success">✓ Instrument field in melody chords found</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Instrument field in melody chords missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testImplementation();
+    </script>
+</body>
+</html>

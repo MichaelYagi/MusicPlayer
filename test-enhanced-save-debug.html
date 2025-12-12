@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Enhanced Save Project Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Enhanced Save Project Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click "Save Project" button</li>
+            <li>Check console for detailed debugging messages:</li>
+            <ul>
+                <li>"Starting JSON validation..."</li>
+                <li>"Parsing beat pattern..."</li>
+                <li>"Beat pattern parsed: [array]"</li>
+                <li>"Beat pattern validation result: true"</li>
+                <li>"Parsing melody pattern..."</li>
+                <li>"Melody pattern parsed: [array]"</li>
+                <li>"Melody pattern validation result: true"</li>
+                <li>"Showing prompt for project name..."</li>
+                <li>"Project name entered: [name]"</li>
+                <li>"Calling storage.saveProject..."</li>
+                <li>"Storage save result: true"</li>
+                <li>"Project saved successfully"</li>
+            </ul>
+        </ol>
+    </div>
+
+    <script>
+        // Test if enhanced debugging was added
+        function testEnhancedDebugging() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/main.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('console.log(\'Starting JSON validation...\')')) {
+                        tests.push('<div class="success">✓ JSON validation start logging added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ JSON validation start logging missing</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Parsing beat pattern...\')')) {
+                        tests.push('<div class="success">✓ Beat pattern parsing logging added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Beat pattern parsing logging missing</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Beat pattern validation result:\', beatValid)')) {
+                        tests.push('<div class="success">✓ Beat validation result logging added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Beat validation result logging missing</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Storage save result:\', success)')) {
+                        tests.push('<div class="success">✓ Storage result logging added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Storage result logging missing</div>');
+                    }
+                    
+                    if (code.includes('console.log(\'Project metadata:\', projectData)')) {
+                        tests.push('<div class="success">✓ Project metadata logging added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Project metadata logging missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading main.js for testing</div>';
+                });
+        }
+        
+        testEnhancedDebugging();
+    </script>
+</body>
+</html>

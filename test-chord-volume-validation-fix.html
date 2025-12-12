@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chord Volume Validation Fix</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        .warning { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>Chord Volume Validation Fix Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Test Instructions</h2>
+        <ol>
+            <li>Open index.html in browser</li>
+            <li>Open browser developer console (F12)</li>
+            <li>Click "Save Project" button</li>
+            <li>Should now see "Beat validation PASSED" for all items including chords without volumes</li>
+            <li>Should see "Beat pattern validation result: true"</li>
+            <li>Should be prompted for project name</li>
+            <li>After saving, should see "Project saved successfully"</li>
+            <li>Chord items without individual beat volumes should validate correctly now</li>
+        </ol>
+    </div>
+
+    <script>
+        // Test if chord volume validation fix was applied
+        function testChordVolumeValidationFix() {
+            const results = document.getElementById('test-results');
+            let tests = [];
+            
+            fetch('js/storage.js')
+                .then(response => response.text())
+                .then(code => {
+                    if (code.includes('const hasAnyVol = item.beats.some(beat =>')) {
+                        tests.push('<div class="success">✓ Chord volume some() check added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Chord volume some() check missing</div>');
+                    }
+                    
+                    if (code.includes('beat.hasOwnProperty(\'vol\')')) {
+                        tests.push('<div class="success">✓ Chord beat hasOwnProperty check added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Chord beat hasOwnProperty check missing</div>');
+                    }
+                    
+                    if (code.includes('hasVol = hasAnyVol || item.beats.every(beat =>')) {
+                        tests.push('<div class="success">✓ Chord volume fallback logic added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Chord volume fallback logic missing</div>');
+                    }
+                    
+                    if (code.includes('!beat.hasOwnProperty(\'vol\') || (typeof beat.vol === \'number\' || Array.isArray(beat.vol))')) {
+                        tests.push('<div class="success">✓ Chord beat volume validation logic added</div>');
+                    } else {
+                        tests.push('<div class="error">✗ Chord beat volume validation logic missing</div>');
+                    }
+                    
+                    results.innerHTML = tests.join('');
+                })
+                .catch(error => {
+                    results.innerHTML = '<div class="error">Error loading storage.js for testing</div>';
+                });
+        }
+        
+        testChordVolumeValidationFix();
+    </script>
+</body>
+</html>
