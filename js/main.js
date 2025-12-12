@@ -67,7 +67,6 @@ class MusicPlayer {
 
         this.tempo = 120; // Default BPM
         this.autoScrollDuringPlayback = true; // Default to auto-scroll enabled
-        
 
         
         // Volume state
@@ -91,7 +90,7 @@ class MusicPlayer {
         };
         
         // Default example patterns
-        this.defaultBeatPattern = `[
+        this.defaultBeatPattern = `{"bpm":300, "pattern": [
     {"beat": "rest", "dur": 5},
     {"beats": [
         {"beat": "snare", "dur": 1},
@@ -145,9 +144,9 @@ class MusicPlayer {
         {"beat": "clap", "dur": 2}
     ]},
     {"beat": "hihat", "dur": 2}
-]`;
+]}`;
 
-        this.defaultMelodyPattern = `[
+        this.defaultMelodyPattern = `{"bpm":300, "pattern": [
     {"note": "F#6", "dur": 0.5, "instrument": "electricGuitar"},
     {"note": "C#6", "dur": 0.5, "instrument": "electricGuitar"},
     {"note": "B5", "dur": 0.5, "instrument": "electricGuitar"},
@@ -242,7 +241,7 @@ class MusicPlayer {
     {"note": "D3", "dur": 1, "instrument": "electricGuitar"},
     {"note": "D2", "dur": 1, "instrument": "electricGuitar"},
     {"note": "D3", "dur": 1, "instrument": "electricGuitar"}
-]`;
+]}`;
 
         this.init();
     }
@@ -702,8 +701,19 @@ class MusicPlayer {
     }
     
     calculatePatternDuration(pattern) {
-        // Filter out BPM setting if present at top level
-        const patternItems = Array.isArray(pattern) ? pattern : [];
+        // Handle both array format and object format with BPM
+        let patternItems = [];
+        
+        if (Array.isArray(pattern)) {
+            patternItems = pattern;
+        } else if (typeof pattern === 'object' && pattern.pattern && Array.isArray(pattern.pattern)) {
+            patternItems = pattern.pattern;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.beats)) {
+            patternItems = pattern.beats;
+        } else if (typeof pattern === 'object' && Array.isArray(pattern.notes)) {
+            patternItems = pattern.notes;
+        }
+        
         return patternItems.reduce((total, item) => total + (item.dur || 1), 0);
     }
     

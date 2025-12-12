@@ -68,18 +68,16 @@
             
             <div id="json-editor" class="pattern-editor active">
                 <div class="input-group">
-                    <label for="beat-input">Beat Pattern:</label>
-                    <textarea id="beat-input" rows="10" cols="50" placeholder="Enter beat pattern JSON..."></textarea>
-                </div>
-                
-                <div class="input-group">
                     <label for="melody-input">Melody Pattern:</label>
                     <textarea id="melody-input" rows="10" cols="50" placeholder="Enter melody pattern JSON..."></textarea>
                 </div>
-            </div>
-            
 
-            
+                <div class="input-group">
+                    <label for="beat-input">Beat Pattern:</label>
+                    <textarea id="beat-input" rows="10" cols="50" placeholder="Enter beat pattern JSON..."></textarea>
+                </div>
+            </div>
+
             <div id="midi-editor" class="pattern-editor">
                 <div class="midi-container">
                     <h4>MIDI File Import</h4>
@@ -97,13 +95,13 @@
         
         <section class="playback-visualization">
             <div class="visualization-container">
-                <div class="beat-visualization">
-                    <h4>Beat Pattern</h4>
-                    <div id="beat-viz" class="pattern-viz"></div>
-                </div>
                 <div class="melody-visualization">
                     <h4>Melody Pattern</h4>
                     <div id="melody-viz" class="pattern-viz"></div>
+                </div>
+                <div class="beat-visualization">
+                    <h4>Beat Pattern</h4>
+                    <div id="beat-viz" class="pattern-viz"></div>
                 </div>
             </div>
         </section>
