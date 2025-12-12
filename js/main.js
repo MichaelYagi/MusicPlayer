@@ -120,19 +120,11 @@ class MusicPlayer {
         // Set default patterns in input areas
         this.beatInput.value = this.defaultBeatPattern;
         this.melodyInput.value = this.defaultMelodyPattern;
-        
-        console.log('MusicPlayer initialized');
-        console.log('Beat pattern:', this.defaultBeatPattern);
-        console.log('Melody pattern:', this.defaultMelodyPattern);
-        
 
-        
         // Add event listeners
         this.playBtn.addEventListener('click', () => this.handlePlay());
         this.stopBtn.addEventListener('click', () => this.handleStop());
-        
 
-        
         // Add tempo control listener
         this.tempoSlider.addEventListener('input', () => {
             this.tempo = parseInt(this.tempoSlider.value);
@@ -171,7 +163,6 @@ class MusicPlayer {
         
         // Add pattern management listeners
         this.saveProjectBtn.addEventListener('click', () => {
-            console.log('Save Project button clicked');
             this.saveProject();
         });
         this.loadProjectBtn.addEventListener('click', () => this.showLoadProjectDialog());
@@ -200,8 +191,6 @@ class MusicPlayer {
                 // Apply current master volume setting after initialization
                 this.audioEngine.setMasterVolume(this.masterVolume / 100);
                 this.audioEngine.playNote('C4', 0.2, 0.3, 0);
-
-                console.log('Test beep played');
             } catch (error) {
                 console.error('Test beep failed:', error);
             }
@@ -209,8 +198,6 @@ class MusicPlayer {
     }
     
     handlePlay() {
-        console.log('Play button clicked');
-        
         if (this.isPlaying) return;
         
         // Validate inputs before playing
@@ -237,12 +224,7 @@ class MusicPlayer {
             if (this.melodyInput.value.trim()) {
                 melodyPattern = JSON.parse(this.melodyInput.value);
             }
-            
-            console.log('Beat pattern:', beatPattern);
-            console.log('Melody pattern:', melodyPattern);
-            
 
-            
             // Validate patterns and show hints
             const beatValidation = this.validatePatternAndShowHints(beatPattern, 'beat');
             const melodyValidation = this.validatePatternAndShowHints(melodyPattern, 'melody');
@@ -1156,13 +1138,9 @@ class MusicPlayer {
     }
     
     saveProject() {
-        console.log('saveProject called');
-        
         const beatText = this.beatInput.value.trim();
         const melodyText = this.melodyInput.value.trim();
-        
-        console.log('Pattern texts:', { beatText, melodyText });
-        
+
         if (!beatText && !melodyText) {
             this.updateStatus('Error: No patterns to save', 'error');
             return;
@@ -1171,19 +1149,13 @@ class MusicPlayer {
         // Validate JSON
         let beatPattern = null;
         let melodyPattern = null;
-        
-        console.log('Starting JSON validation...');
-        
+
         try {
             if (beatText) {
-                console.log('Parsing beat pattern...');
                 beatPattern = JSON.parse(beatText);
-                console.log('Beat pattern parsed:', beatPattern);
-                
-                console.log('Validating beat pattern...');
+
                 const beatValid = this.storage.validatePattern(beatPattern, 'beat');
-                console.log('Beat pattern validation result:', beatValid);
-                
+
                 if (!beatValid) {
                     this.updateStatus('Error: Invalid beat pattern format', 'error');
                     return;
@@ -1191,14 +1163,10 @@ class MusicPlayer {
             }
             
             if (melodyText) {
-                console.log('Parsing melody pattern...');
                 melodyPattern = JSON.parse(melodyText);
-                console.log('Melody pattern parsed:', melodyPattern);
-                
-                console.log('Validating melody pattern...');
+
                 const melodyValid = this.storage.validatePattern(melodyPattern, 'melody');
-                console.log('Melody pattern validation result:', melodyValid);
-                
+
                 if (!melodyValid) {
                     this.updateStatus('Error: Invalid melody pattern format', 'error');
                     return;
@@ -1206,32 +1174,24 @@ class MusicPlayer {
             }
             
             // Prompt for name
-            console.log('Showing prompt for project name...');
             const name = prompt('Enter a name for this project:', `Project ${Date.now()}`);
-            console.log('Project name entered:', name);
-            
+
             if (!name) {
-                console.log('User cancelled project save');
                 return;
             }
             
             // Save project
-            console.log('Calling storage.saveProject...');
             const projectData = {
                 tempo: this.tempo,
                 description: 'User-created music project',
                 tags: ['user-created']
             };
-            console.log('Project metadata:', projectData);
-            
+
             const success = this.storage.saveProject(name, beatPattern, melodyPattern, projectData);
-            console.log('Storage save result:', success);
-            
+
             if (success) {
-                console.log('Project saved successfully');
                 this.updateStatus('Project saved successfully', 'success');
             } else {
-                console.log('Project save failed');
                 this.updateStatus('Error: Failed to save project', 'error');
             }
             
@@ -1938,14 +1898,12 @@ class MusicPlayer {
             // Schedule highlighting with simple scroll
             const highlightTimer = setTimeout(() => {
                 vizItem.classList.add('active');
-                console.log(`Added active class to ${type} item ${index}:`, label);
-                
+
                 // Simple scroll to active item
                 this.scrollToActiveItem(viz, vizItem);
                 
                 setTimeout(() => {
                     vizItem.classList.remove('active');
-                    console.log(`Removed active class from ${type} item ${index}:`, label);
                 }, duration * 1000 - 100); // Remove highlight just before next item
             }, startTime * 1000);
             
@@ -1976,8 +1934,6 @@ class MusicPlayer {
                 inline: 'center',
                 block: 'nearest'
             });
-            
-            console.log('Scrolled to active item using scrollIntoView');
         } catch (error) {
             // Fallback to manual scroll calculation
             try {
